@@ -151,9 +151,9 @@ def selectOption():
 
 def checkVersion():
     try:
-        response = requests.get('https://pastebin.com/raw/012zh2qx', verify=False)
+        response = requests.get('https://pastebin.com/raw/4XGteBUM', verify=False)
         latest_version = response.text.strip()
-        current_version = '1.0.0'
+        current_version = '1.0.1'
         if latest_version != current_version:
             printOutdated()
     except Exception as e:
