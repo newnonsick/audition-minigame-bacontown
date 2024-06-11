@@ -2,62 +2,13 @@ import os
 import warnings
 import keyboard
 import time
-import numpy as np
 import pyautogui
 import win32gui
-import cv2
 import pygetwindow as gw
 import requests
-
-# def draw_roi():
-#     global window_title
-#     window = gw.getWindowsWithTitle(window_title)[0]
-#     if window is None:
-#         return
-#     # left, top, right, bottom = window.left, window.top, window.left + window.width, window.top + window.height
-#     # window.left + 795, window.top + 850, window.left + window.width - 795, window.top + window.height - 185
-#     #1 window.left + 795, window.top + 850, window.left + window.width - 1080, window.top + window.height - 185
-#     #2 window.left + 842, window.top + 850, window.left + window.width - 1031, window.top + window.height - 185
-#     #3 window.left + 889, window.top + 850, window.left + window.width - 984, window.top + window.height - 185
-#     #4 window.left + 936, window.top + 850, window.left + window.width - 937, window.top + window.height - 185
-#     #5 window.left + 983, window.top + 850, window.left + window.width - 890, window.top + window.height - 185
-#     #6 window.left + 1030, window.top + 850, window.left + window.width - 843, window.top + window.height - 185
-#     #7 window.left + 1077, window.top + 850, window.left + window.width - 796, window.top + window.height - 185
-#     #space window.left + 1050, window.top + 820, window.left + window.width - 830, window.top + window.height - 240
-
-#     # left, top, right, bottom = window.left, window.top, window.left + window.width, window.top + window.height
-#     # window.left + 795, window.top + 850, window.left + window.width - 795, window.top + window.height - 185
-#     #1 window.left + 820, window.top + 850, window.left + window.width - 1055, window.top + window.height - 185
-#     #2 window.left + 867, window.top + 850, window.left + window.width - 1006, window.top + window.height - 185
-#     #3 window.left + 914, window.top + 850, window.left + window.width - 959, window.top + window.height - 185
-#     #4 window.left + 961, window.top + 850, window.left + window.width - 912, window.top + window.height - 185
-#     #5 window.left + 1008, window.top + 850, window.left + window.width - 865, window.top + window.height - 185
-#     #6 window.left + 1055, window.top + 850, window.left + window.width - 818, window.top + window.height - 185
-#     #space window.left + 1025, window.top + 820, window.left + window.width - 855, window.top + window.height - 240
-#     left, top, right, bottom = window.left + 1055, window.top + 850, window.left + window.width - 818, window.top + window.height - 185
-#     screenshot = pyautogui.screenshot(region=(left, top, right - left, bottom - top))
-#     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
-#     cv2.rectangle(screenshot, (0, 0), (right - left, bottom - top), (0, 255, 0), 2)
-#     cv2.imshow(f'{window.width} {window.height}', screenshot)
-#     cv2.waitKey(1)
-
-# def update_window_position():
-#     global window_positions
-#     global window_title
-#     while True:
-#         window = gw.getWindowsWithTitle(window_title)[0]
-#         if window is not None:
-#             window_positions = []
-#         window_positions = [
-#             [window.left + 795, window.top + 850, window.left + window.width - 1080, window.top + window.height - 185],
-#             [window.left + 842, window.top + 850, window.left + window.width - 1031, window.top + window.height - 185],
-#             [window.left + 889, window.top + 850, window.left + window.width - 984, window.top + window.height - 185],
-#             [window.left + 936, window.top + 850, window.left + window.width - 937, window.top + window.height - 185],
-#             [window.left + 983, window.top + 850, window.left + window.width - 890, window.top + window.height - 185],
-#             [window.left + 1030, window.top + 850, window.left + window.width - 843, window.top + window.height - 185],
-#             [window.left + 1077, window.top + 850, window.left + window.width - 796, window.top + window.height - 185]
-#         ]
-#         time.sleep(1)
+import zipfile
+import urllib.request
+import pynput
 
 def press_key(key):
     keyboard.press(key)
@@ -69,12 +20,13 @@ def looking_for_press_space():
     global window_index
     global window_title
     global space_position
+    global username
     while True:
         window = gw.getWindowsWithTitle(window_title)[0]
         if window is not None:
             left, top, right, bottom = space_position
             screenshot = pyautogui.screenshot(region=(left, top, right - left, bottom - top))
-            location = pyautogui.locate('D://fishtest//dot.png', screenshot, confidence=0.8)
+            location = pyautogui.locate(f'C://Users//{username}//AppData//Local//Temp//images_fishing//dot//dot.png', screenshot, confidence=0.8)
             if location:
                 press_key('space')
                 window_index = 0
@@ -132,6 +84,8 @@ def printStatus():
 """
     print(text)
     print("  Working with the FiveM® by Cfx.re - Bacon Town. Resolution: 1920x1080 windowed")
+    print("  Press 'Ctrl + R' to reselect the option.")
+    print("  Press 'Ctrl + X' to exit the program.")
 
 
 def printOutdated():
@@ -146,9 +100,9 @@ def printOutdated():
 """
     print(text)
     print("  Your version of the program is outdated. Please download the latest version.")
-    print("  Link: https://drive.google.com/file/d/1xS8DZ0VekeRzM0YKBpvYWpGidZxQ1vBB/view?usp=sharing")
+    print("  Link: https://drive.google.com/file/d/1yfUe-Plx-AWu7Ai9rdGoVg2N23S6Ez5a/view?usp=sharing")
     print("  Press any key to exit the program.")
-    url = 'https://drive.google.com/file/d/1xS8DZ0VekeRzM0YKBpvYWpGidZxQ1vBB/view?usp=sharing'
+    url = 'https://drive.google.com/file/d/1yfUe-Plx-AWu7Ai9rdGoVg2N23S6Ez5a/view?usp=sharing'
     os.system(f'start {url}')
     keyboard.read_key()
     os._exit(0)
@@ -167,6 +121,33 @@ def printFiveMNotFound():
     print("  FiveM® by Cfx.re - Bacon Town not found. Please open the game.")
     print("  Retrying in 1 second...")
     time.sleep(1)
+
+def selectOption():
+    os.system('cls')
+    text = """
+     _         _        _____ _     _     _             
+    / \  _   _| |_ ___ |  ___(_)___| |__ (_)_ __   __ _ 
+   / _ \| | | | __/ _ \| |_  | / __| '_ \| | '_ \ / _` |
+  / ___ \ |_| | || (_) |  _| | \__ \ | | | | | | | (_| |
+ /_/   \_\__,_|\__\___/|_|   |_|___/_| |_|_|_| |_|\__, |
+                                                  |___/                                                  
+"""
+    print(text)
+    print("  Working with the FiveM® by Cfx.re - Bacon Town. Resolution: 1920x1080 windowed")
+    while True:
+        print("  Select the option:")
+        print("  [1] - Shallow water fishing")
+        print("  [2] - Deep sea fishing")
+        option = input("  Option: ")
+        if option not in ['1', '2']:
+            print("  Invalid option. Please select a valid option.")
+            keyboard.read_key()
+            os.system('cls')
+            selectOption()
+        else:
+            return option
+
+
 
 def checkVersion():
     try:
@@ -194,45 +175,42 @@ def checkGameAppear():
             hwnd = find_window(window_title)
             time.sleep(1)
             return hwnd
-            break
         except Exception as e:
             printFiveMNotFound()
 
+def downloadFile(username):
+    url = 'https://drive.google.com/uc?export=download&id=1TnGPkytkgLCSDhpbZFjiq00_zNfJMYxE'
+    try:
+        urllib.request.urlretrieve(url, fr'C:\Users\{username}\AppData\Local\Temp\images_fishing.zip')
+    except Exception as e:
+        print("Error downloading the file:", e)
+        return
 
-if __name__ == "__main__":
-    warnings.filterwarnings("ignore")
+    try:
+        with zipfile.ZipFile(fr'C:\Users\{username}\AppData\Local\Temp\images_fishing.zip', 'r') as zip_ref:
+            zip_ref.extractall(fr'C:\Users\{username}\AppData\Local\Temp')
+    except Exception as e:
+        print("Error extracting files from zip:", e)
+        return
 
-    checkVersion()
-    
-    window_positions = []
-    window_index = 0
+    os.remove(fr'C:\Users\{username}\AppData\Local\Temp\images_fishing.zip')
 
-    image_folder = fr'D:\fishtest\image'
-    image_paths = [os.path.join(image_folder, img) for img in os.listdir(image_folder) if img.endswith('.png')]
+def on_press(key):
+    if str(key) == "'\\x18'":
+        os._exit(0)
+    elif str(key) == "'\\x12'":
+        option = selectOption()
+        updateWindowPosition(option)
+        printStatus()
 
-    window_title = "FiveM® by Cfx.re - Bacon Town"
-    # window_title = "Screenshot 2024-06-09 161100.png ‎- Photos"
+def on_release(key):
+    pass
 
-    hwnd = checkGameAppear()
-    
-    printStatus()
-
-    #select option
-    while True:
-        print("  Select the option:")
-        print("  [1] - Shallow water fishing")
-        print("  [2] - Deep sea fishing")
-        option = input("  Option: ")
-        if option not in ['1', '2']:
-            print("  Invalid option. Please select a valid option.")
-            keyboard.read_key()
-            os.system('cls')
-            printStatus()
-        else:
-            break
-
-    win32gui.SetForegroundWindow(hwnd)
-    
+def updateWindowPosition(option):
+    global window_positions
+    global window_title
+    global space_position
+    global hwnd
 
     window = gw.getWindowsWithTitle(window_title)[0]
 
@@ -243,7 +221,6 @@ if __name__ == "__main__":
         window_positions = [
         [window.left + 820, window.top + 850, window.left + window.width - 1055, window.top + window.height - 185],
         [window.left + 867, window.top + 850, window.left + window.width - 1006, window.top + window.height - 185],
-        [window.left + 914, window.top + 850, window.left + window.width - 959, window.top + window.height - 185],
         [window.left + 961, window.top + 850, window.left + window.width - 912, window.top + window.height - 185],
         [window.left + 1008, window.top + 850, window.left + window.width - 865, window.top + window.height - 185],
         [window.left + 1055, window.top + 850, window.left + window.width - 818, window.top + window.height - 185]
@@ -260,8 +237,41 @@ if __name__ == "__main__":
         [window.left + 1077, window.top + 850, window.left + window.width - 796, window.top + window.height - 185]
         ]
         space_position = [window.left + 1050, window.top + 820, window.left + window.width - 830, window.top + window.height - 240]
-        
+
+    # win32gui.SetForegroundWindow(hwnd)
+
+if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+
+    checkVersion()
+
+    username = os.getlogin()
+
+    if os.path.exists(fr'C:\Users\{username}\AppData\Local\Temp\images_fishing'):
+        os.system(f'rd /s /q C:\\Users\\{username}\\AppData\\Local\\Temp\\images_fishing')
+
+    downloadFile(username)
+
+    image_folder = fr'C:\Users\{username}\AppData\Local\Temp\images_fishing'
+    image_paths = [os.path.join(image_folder, img) for img in os.listdir(image_folder) if img.endswith('.png')]
     
+    window_positions = []
+    space_position = []
+    window_index = 0
+
+    window_title = "FiveM® by Cfx.re - Bacon Town"
+    # window_title = "Screenshot 2024-06-09 161100.png ‎- Photos"
+
+    hwnd = checkGameAppear()
+    
+    option = selectOption()
+    updateWindowPosition(option)
+    printStatus()
+    
+    current_keys = set()
+
+    listener = pynput.keyboard.Listener(on_press=on_press, on_release=on_release)
+    listener.start()
 
     looking_for_press_key()
 
